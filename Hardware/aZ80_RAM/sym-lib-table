@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Memory_RAM")(type "Legacy")(uri "${KIPRJMOD}/Memory_RAM.lib")(options "")(descr ""))
+  (lib (name "aZ80_RAM-rescue")(type "KiCad")(uri "${KIPRJMOD}/aZ80_RAM-rescue.kicad_sym")(options "")(descr ""))
+)
