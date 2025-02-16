@@ -26,7 +26,8 @@ sein und nicht hinter einer Paywall liegen, teure Kits oder Zusatz Hardware ben�
 
 Für den aZ80 wurden eine alte Version von MS Basic (Nascom Basic 4.7) und der Efex Monitor (Efex V4 1.0) mit einem eigenen BIOS kombiniert.
 Das BIOS checkt, ob die wichtigsten Karten des Systems funktionieren und initialisiert diese. Danach erscheint über die serielle Schnittstelle
-die Auswahlmöglichkeit zwischen dem Basic und dem Monitor Programm.
+die Auswahlmöglichkeit zwischen dem Basic und dem Monitor Programm. Diese sind so angepasst, dass sie mit dem 
+Online Z80 Compiler <a href="https://www.asm80.com/">ASM80</a> bearbeitet werden können.
 
 Nascom Basic Verweis: <a href="https://gitlab.com/feilipu/NASCOM_BASIC"> https://gitlab.com/feilipu/NASCOM_BASIC </a>
 
