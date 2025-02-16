@@ -46,21 +46,22 @@ $8100 - $FFFF	Stack + User Memory
 
 
 #### I/O Map
-
- $00-$0F		Digital I/O	00000000 - 0000xx11  (preliminary)
- $10-$1F		IDE/CF  I/O 0001xx00 - 0001xx11  (preliminary)
- $80-$81		Serial  I/O	10xxxxx0 - 10xxxxx1  (addr decoder verbrät viele Addressen)
- $C0-$CF		Video   I/O	1100xx00 - 1100xx11  (preliminary)
- $D0-$DF		Audio   I/O	1101xx00 - 1101xx11  (preliminary)
+|  IO Addresse  | Verwendung |
+| -------------:|:-----------|
+| $00-$0F	| Digital I/O 00000000 - 0000xx11  (preliminary) |
+| $10-$1F	| IDE/CF  I/O 0001xx00 - 0001xx11  (preliminary) |
+| $80-$81	| Serial  I/O 10xxxxx0 - 10xxxxx1  (addr decoder verbrät viele Addressen) |
+| $C0-$CF	| Video   I/O 1100xx00 - 1100xx11  (preliminary) |
+| $D0-$DF	| Audio   I/O 1101xx00 - 1101xx11  (preliminary) |
 
 #### RST Vectors
-
- RST00		$0000	Reset Vector
- RST08		$0008	TX Char - Sende Zeichen über seriellen Port 
- RST10		$0010	RX Char - Empfange Zeichen über seriellen Port 
- RST18		$0018	Check Char - Überprüfe ob Zeichen eingegangen sind
- RST20		$0020	-
- RST28		$0028	-
- RST30		$0030	-
- RST38		$0038	INT Vector - 
-
+|  Reset Vector | Verwendung |
+| -------------:|:-----------|
+| RST00		| $0000	Reset Vector |
+| RST08		| $0008	TX Char - Sende Zeichen über seriellen Port |
+| RST10		| $0010	RX Char - Empfange Zeichen über seriellen Port | 
+| RST18		| $0018	Check Char - Überprüfe ob Zeichen eingegangen sind |
+| RST20		| $0020	- |
+| RST28		| $0028	- |
+| RST30		| $0030	- |
+| RST38		| $0038	INT Vector - |
