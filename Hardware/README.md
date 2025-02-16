@@ -11,42 +11,40 @@ miteinander verbunden. Der 40 Pin breite Bus des aZ80 enthält die wichtigsten S
 Komponenten miteinander zu verbinden. Weitere Infos und Produktionsdaten findet man im jeweiligen
 Unterordner.
 
-#### Speicher und I/O Adressen
+### Speicher und I/O Adressen
 
-ROM:  $0000 - $3FFF
+#### ROM:  $0000 - $3FFF
+|  Addresse  | Verwendung |
+| ----------:|:-----------|
+| $0000 | RST Vectors und System Funktionen |
+| $0070 | BIOS |
+| $0200 | BASIC |
+| $2000 | MONITOR |
+|   |   |
+| $4000 - $7FFF	| Expansion ROM or VideoRAM 16K (preliminary) |
 
-  $0000  RST Vectors und System Funktionen
-	$0070  BIOS
-	$0200  BASIC ROM
-	$2000  MONITOR ROM
-
-$4000 - $7FFF	Expansion ROM or VideoRAM 16K (preliminary)
-
-RAM:  $8000 - $FFFF
-
-$8000 - $80FF	System Variables (Zero Page)
-
-  $8000	Serial Buffer			    size $3F
-	$8040	Serial In Pointer		  size 2
-	$8042	Serial Rd Pointer		  size 2
-	$8044	Serial Buffer Used		size 2
-	$8046	Basic Started?			  size 1
-
-Init:
-	$80ED	Temp Stack			
-
-Basic:
-	$8047	Workspace Start (see Basic)
-	$81A3	Basic Memory Start
-
-Monitor:
-	$8047	Workspace Start (see Monitor)
-
-$8100 - $FFFF	Stack + User Memory
+#### RAM:  $8000 - $FFFF
+|  Addresse  | Verwendung |
+| ----------:|:-----------|
+| $8000 - $80FF | System Variables (Zero Page) |
+|   $8000 | Serial Buffer  size $3F |
+|   $8040 | Serial In Pointer  size 2 |
+|   $8042 | Serial Rd Pointer  size 2 |
+|   $8044 | Serial Buffer Used	size 2 |
+|   $8046 | Basic Started?  size 1 |
+| Init: | | 
+|   $80ED | Temp Stack |			
+| Basic: | |
+|   $8047 | Workspace Start (see Basic) |
+|   $81A3 | Basic Memory Start |
+| Monitor: | |
+|   $8047 | Workspace Start (see Monitor) |
+| | |
+| $8100 - $FFFF	| Stack + User Memory |
 
 
 #### I/O Map
-|  IO Addresse  | Verwendung |
+|  I/O Addresse  | Verwendung |
 | -------------:|:-----------|
 | $00-$0F	| Digital I/O 00000000 - 0000xx11  (preliminary) |
 | $10-$1F	| IDE/CF  I/O 0001xx00 - 0001xx11  (preliminary) |
