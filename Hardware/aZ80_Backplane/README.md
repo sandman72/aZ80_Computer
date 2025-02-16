@@ -29,22 +29,24 @@ Unser aZ80 Computer benötigt eine +5V Versorgungsspannung von etwa 300mA, was e
 Der BUS ist größtenteils kompatibel mit dem sogenannten RC40 System (Retro Computer 40), dass auch im RC2014 Computer benutzt wird. Hierzu gibt es diverse Erweiterungsplatinen, die auch zum großen Teil mit dem aZ80 kompatibel sind.
 
 Pin-Belegung der aZ80 Busses
-----------------------------------
--  1 - 16  A15-A0 	Adress-Bus 
--    17  GND		Masse
--    18  VCC +5V	Versorgungsspannung
--    19  M1		Steuerungssignal
--    20  RESET		Zurücksetzen des Systems
--    21  CLOCK		Taktsignal 3,68MHz
--    22  INT		Interrupt, Unterbrechungsanforderung
--    23  MREQ		Memory Request, Speicheranfrage
--    24  WR		Write, Daten schreiben
--    25  RD		Read, Daten lesen
--    26  IORQ		I/O Request, I/O-Anfrage
-- 27 - 34  D0-D7		Daten-Bus
--    35  TX		Serielle Daten Senden
--    36  RX		Serielle Daten Empfangen
-- 37 - 40  USR1-USR4	Benutzerdefinierte Signale  
+
+|   Pin   |  Signal  |
+|--------:|:---------|
+|  1 - 16 | A15-A0 	Adress-Bus | 
+|      17 | GND		Masse |
+|      18 | VCC +5V	Versorgungsspannung |
+|      19 | M1		Steuerungssignal |
+|      20 | RESET		Zurücksetzen des Systems |
+|      21 | CLOCK		Taktsignal 3,68MHz |
+|      22 | INT		Interrupt, Unterbrechungsanforderung |
+|      23 | MREQ		Memory Request, Speicheranfrage |
+|      24 | WR		Write, Daten schreiben |
+|      25 | RD		Read, Daten lesen |
+|      26 | IORQ		I/O Request, I/O-Anfrage |
+| 27 - 34 | D0-D7		Daten-Bus |
+|      35 | TX		Serielle Daten Senden |
+|      36 | RX		Serielle Daten Empfangen |
+| 37 - 40 | USR1-USR4	Benutzerdefinierte Signale |  
 
 Der Adress- und Daten-Bus ermöglicht dem Prozessor/CPU mit den einzelnen Karten Daten auszutauschen. Dabei enthält der Adress-Bus, wenn man so will, die Adresse eines Postfachs in das man was reinlegen oder rausholen möchte. Der Daten-Bus enthält die Information die dort gelesen wurde oder abgelegt werden soll.
 
