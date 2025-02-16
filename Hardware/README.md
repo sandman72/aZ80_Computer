@@ -7,5 +7,6 @@
 Über eine zentrale Verbindungsplatine (aZ80 Bus) werden die Prozessorplatine (aZ80 CPU),
 der Festwertspeicher (aZ80 ROM), der Zugriffspeicher (aZ80 RAM), die Taktplatine (aZ80 Clock),
 der serielle Controller (aZ80 Serial), die Ein- und Ausgabeplatine (aZ80 DIO) und weitere Platinen,
-miteinander verbunden.
-
+miteinander verbunden. Der 40 Pin breite Bus des aZ80 enthält die wichtigsten Signale um diese 
+Komponenten miteinander zu verbinden. Weitere Infos und Produktionsdaten findet man im jeweiligen
+Unterordner.
