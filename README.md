@@ -29,4 +29,5 @@ Das BIOS checkt, ob die wichtigsten Karten des Systems funktionieren und initial
 die Auswahlmöglichkeit zwischen dem Basic und dem Monitor Programm.
 
 Nascom Basic Verweis: <a href="https://gitlab.com/feilipu/NASCOM_BASIC"> https://gitlab.com/feilipu/NASCOM_BASIC </a>
+
 Efex V4 1.0 Verweis: <a href="https://mkpeker.wixsite.com/efex"> https://mkpeker.wixsite.com/efex </a>
