@@ -12,14 +12,14 @@ Der Taster SW1 erlaubt das Zurücksetzen und Neustarten des Computers, der sogen
 
 Im Kurs zeigen wir euch, wie man diese Platinen am besten zusammen lötet.
 
-Externe Anschlüsse:
+#### Externe Anschlüsse:
 
  - J1 - Steckleiste für Serielles Interfaces (FTDI Belegung)
  - J2 - Buchse für die externe 5V Versorgungsspannung (Barrel-Jack, Mitte +5V)
  - J3 - +5V Messpunkt für die Versorgungsspannung.
  - J4 - Masse Messpunkt für die Versorgungsspannung.
 
-Steckbrücken (Jumper):
+#### Steckbrücken (Jumper):
 
  - JP1 - Steuerleitung RTS des FTDI USB Seriell Wandlers mit Leitung USR1 verbinden
  - JP2 - Stromversorgung per FTDI USB Seriell Wandler erlauben
@@ -28,7 +28,7 @@ Unser aZ80 Computer benötigt eine +5V Versorgungsspannung von etwa 300mA, was e
 
 Der BUS ist größtenteils kompatibel mit dem sogenannten RC40 System (Retro Computer 40), dass auch im RC2014 Computer benutzt wird. Hierzu gibt es diverse Erweiterungsplatinen, die auch zum großen Teil mit dem aZ80 kompatibel sind.
 
-Pin-Belegung der aZ80 Busses
+#### Pin-Belegung der aZ80 Busses:
 
 |   Pin   |  Signal  |
 |--------:|:---------|
@@ -52,7 +52,6 @@ Der Adress- und Daten-Bus ermöglicht dem Prozessor/CPU mit den einzelnen Karten
 
 Mit den Steuersignale (RD, WR, MREQ, IORQ, M1) legt der Prozessor fest, wie und von wo etwas gelesen oder geschrieben werden soll.   
 
-Benutzerdefinierte Signale USR1-USR4:
------------------------------------------
+#### Benutzerdefinierte Signale USR1-USR4:
 
 Die vier USR1-USR4 Pins kann man selber nach Bedarf belegen. Die Serielle Karte kann z.B. über die Steuerleitung USR1 mit dem FTDI Seriell Wandler verbunden werden, was eine Flusssteuerung der Daten erlaubt. Dies ist nötig, wenn unser aZ80 lange BASIC Programme empfangen und nichts verloren gehen soll.
