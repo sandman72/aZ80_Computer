@@ -1,0 +1,4 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "aZ80_Template-rescue")(type "KiCad")(uri "${KIPRJMOD}/aZ80_Template-rescue.kicad_sym")(options "")(descr ""))
+)
