@@ -36,7 +36,7 @@ Efex V4 1.0 Verweis: <a href="https://mkpeker.wixsite.com/efex"> https://mkpeker
 #### VDP
 
 Als Highlight hat der aZ80 ein Video Display Prozessor mit an Board, der die Verbindung in die jetzige Zeit herstellt. Mit dieser Karte kann man den aZ80
-an einen DVI/HDMI Monitor anschließe, und per USB auch Tastatur, Maus, Joystick und/oder Speicher anschließen. Das kombiniert mit einem schicken Gehäuse
+an einen DVI/HDMI Monitor anschließen und per USB auch Tastatur, Maus, Joystick und/oder Speicher anschließen. Das kombiniert mit einem schicken Gehäuse
 mit eingebautem Display gibt dann einen kleinen feinen Standalone Z80 Computer.
 
 Der VDP wird über die serielle Schnittstelle angesprochen und kann Text 40x25 Zeichen oder auch Grafiken (320x240 Pixel mit 256 Farben), Sprites oder 
