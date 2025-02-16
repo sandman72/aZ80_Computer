@@ -1,0 +1,2 @@
+10 PRINT CHR$(141.5 + RND(1) );
+20 GOTO 10
