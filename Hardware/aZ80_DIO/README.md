@@ -15,6 +15,7 @@ Damit können auch mehrere Karten in einem aZ80 System genutzt werden, wenn alle
 Die LEDs können über die eingestellte Addresse mit einem I/O Write eingeschaltet werden. 
 
 Basic:   OUT 0, 170    schaltet jede zweite LED an Port 0 an.
+
 ASM:     out (0), 170  schaltet jede zweite LED an Port 0 an.
 
 #### Taster & Joystick
@@ -22,4 +23,5 @@ ASM:     out (0), 170  schaltet jede zweite LED an Port 0 an.
 Die Taster und der Joystick können über die eingestellte Addresse mit einem I/O Read ausgelesen werden.
 
 Basic:   INP(0)
+
 ASM:     
