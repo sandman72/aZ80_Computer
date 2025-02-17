@@ -17,6 +17,29 @@ miteinander verbunden. Der 40 Pin breite Bus des aZ80 enthält die wichtigsten S
 Komponenten miteinander zu verbinden. Weitere Infos und Produktionsdaten findet man im jeweiligen
 Unterordner.
 
+## Hier weitere Infos zur Hardware:
+
+### Pin-Belegung der aZ80 Busses:
+
+|   Pin   |  Signal  |
+|--------:|:---------|
+|  1 - 16 | A15-A0 	Adress-Bus | 
+|      17 | GND		Masse |
+|      18 | VCC +5V	Versorgungsspannung |
+|      19 | M1		Steuerungssignal |
+|      20 | RESET		Zurücksetzen des Systems |
+|      21 | CLOCK		Taktsignal 3,68MHz |
+|      22 | INT		Interrupt, Unterbrechungsanforderung |
+|      23 | MREQ		Memory Request, Speicheranfrage |
+|      24 | WR		Write, Daten schreiben |
+|      25 | RD		Read, Daten lesen |
+|      26 | IORQ		I/O Request, I/O-Anfrage |
+| 27 - 34 | D0-D7		Daten-Bus |
+|      35 | TX		Serielle Daten Senden |
+|      36 | RX		Serielle Daten Empfangen |
+| 37 - 40 | USR1-USR4	Benutzerdefinierte Signale |  
+
+
 ### Speicher und I/O Adressen
 
 #### ROM:  $0000 - $3FFF
