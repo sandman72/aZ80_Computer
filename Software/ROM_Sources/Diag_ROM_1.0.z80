@@ -1,0 +1,733 @@
+;==================================================================================
+; 
+;                aZ80 Retro Z80 System - Attraktor Edition
+; 
+;                       Diagnostics and Test ROM V1.0
+; 
+;           Contents of this file are copyright Frank Hellmann
+; 
+;               https://wiki.attraktor.org/aZ80_Computer
+; 
+; You have permission to use this for NON COMMERCIAL USE ONLY
+; If you wish to use it elsewhere, please include an acknowledgement to myself.
+; 
+;       LED Status Codes:
+;
+;         Errors:      
+;           01010101    stuck at setup - this is bad - cpu/rom damage?
+;           10000001    stuck at minimal RAM test - RAM missing/damaged?
+;           10000010    sound card stuck during setup - CPU Board USR1 on?
+;           10000100    RAM error while testing - check serial output for info
+;           10001000    serial IC hang during setup - serial IC missing/damaged?
+;           10010000    (sound test - not used)
+;           10100000    char print test stuck - check serial IC or RTS INT line
+;
+;         Infos:
+;           00000001    minimal RAM test OK
+;           00000010    sound card silence
+;           00000100    serial IC setup OK
+;           00001000    full RAM test OK
+;           00010000    sound test OK, if SN76489 sound card is present on $FF 
+;           00100000    char print test OK
+;
+;         Default:
+;           00000000    all tests passed OK
+
+
+            .ENGINE aZ80 
+
+STARTRAM    EQU     $8000 ; RAM Start Address
+STARTEXP    EQU     $4000 ; Expansion Start Address ( extra RAM )
+IOPORT      EQU     $00   ; Standard Data Port for I/O Card with LEDs
+SNDPORT     EQU     $FF   ; Standard Data Port for SN76489 Sound Card is $FF
+
+; Minimum 6850 ACIA interrupt driven serial I/O to run modified NASCOM Basic 4.7
+; Full input buffering with incoming data hardware handshaking
+; Handshake shows full before the buffer is totally filled to allow run-on from the sender
+
+SER_BUFSIZE EQU     $3F 
+SER_FULLSIZE EQU    $30 
+SER_EMPTYSIZE EQU   5 
+
+RTS_HIGH    EQU     $0D6 
+RTS_LOW     EQU     $096 
+
+SERBUF      EQU     $8000 
+SERINPTR    EQU     serBuf+SER_BUFSIZE 
+SERRDPTR    EQU     serInPtr+2 
+SERBUFUSED  EQU     serRdPtr+2 
+TEMPSTACK   EQU     $80FF
+
+CR          EQU     $0D 
+LF          EQU     $0A 
+CS          EQU     $0C ; Clear screen
+
+;------------------------------------------------------------------------------
+; RST 00 - Reset
+            .ORG    $0000 
+RST00:      DI      ;Disable interrupts
+            JP      TESTINIT ;Initialize Hardware and go
+
+;------------------------------------------------------------------------------
+; RST 08 - TX a character over serial port
+
+            .ORG    $0008 
+RST08:      JP      TXA 
+
+;------------------------------------------------------------------------------
+; RST 10 - RX a character over serial port, hold here until char ready.
+
+            .ORG    $0010 
+RST10:      JP      RXA 
+
+;------------------------------------------------------------------------------
+; RST 18 - Check serial status
+
+            .ORG    $0018 
+RST18:      JP      CKINCHAR 
+
+;------------------------------------------------------------------------------
+; RST 20 - Free
+
+            .ORG    $0020 
+RST20:      RET 
+
+;------------------------------------------------------------------------------
+; RST 28 - Free
+
+            .ORG    $0028 
+RST28:      RET      
+
+;------------------------------------------------------------------------------
+; RST 30 - Free
+
+            .ORG    $0030 
+RST30:      RET      
+
+;------------------------------------------------------------------------------
+; RST 38 - INT INTERRUPT VECTOR [ for IM 1 ] - Serial Int
+
+            .ORG    $0038 
+RST38:      JR      serialInt 
+
+;------------------------------------------------------------------------------
+; RST 66 - NMI INTERRUPT VECTOR [ for IM 1 ] - Free
+
+            .ORG    $0066 
+RST66:      RET      
+
+
+;------------------------------------------------------------------------------
+            .ORG    $0070 
+SERIALINT:  PUSH    AF 
+            PUSH    HL 
+
+            IN      A,($80) 
+            AND     $01 ; Check if interupt due to read buffer full
+            JR      Z,rts0 ; if not, ignore
+
+            IN      A,($81) 
+            PUSH    AF 
+            LD      A,(serBufUsed) 
+            CP      SER_BUFSIZE ; If full then ignore
+            JR      NZ,notFull 
+            POP     AF 
+            JR      rts0 
+
+NOTFULL:    LD      HL,(serInPtr) 
+            INC     HL 
+            LD      A,L ; Only need to check low byte becasuse buffer<256 bytes
+            CP      (serBuf+SER_BUFSIZE) & $FF 
+            JR      NZ,notWrap 
+            LD      HL,serBuf 
+NOTWRAP:    LD      (serInPtr),HL 
+            POP     AF 
+            LD      (HL),A 
+            LD      A,(serBufUsed) 
+            INC     A 
+            LD      (serBufUsed),A 
+            CP      SER_FULLSIZE 
+            JR      C,rts0 
+            LD      A,RTS_HIGH 
+            OUT     ($80),A 
+RTS0:       POP     HL 
+            POP     AF 
+            EI       
+            RETI     
+
+;------------------------------------------------------------------------------
+RXA:                 
+WAITFORCHAR: LD     A,(serBufUsed) 
+            CP      $00 
+            JR      Z,waitForChar 
+            PUSH    HL 
+            LD      HL,(serRdPtr) 
+            INC     HL 
+            LD      A,L ; Only need to check low byte becasuse buffer<256 bytes
+            CP      (serBuf+SER_BUFSIZE) & $FF 
+            JR      NZ,notRdWrap 
+            LD      HL,serBuf 
+NOTRDWRAP:  DI       
+            LD      (serRdPtr),HL 
+            LD      A,(serBufUsed) 
+            DEC     A 
+            LD      (serBufUsed),A 
+            CP      SER_EMPTYSIZE 
+            JR      NC,rts1 
+            LD      A,RTS_LOW 
+            OUT     ($80),A 
+RTS1:                
+            LD      A,(HL) 
+            EI       
+            POP     HL 
+            RET      ; Char ready in A
+
+;------------------------------------------------------------------------------
+TXA:        PUSH    AF ; Store character
+CONOUT1:    IN      A,($80) ; Status byte
+            BIT     1,A ; Set Zero flag if still transmitting character
+            JR      Z,conout1 ; Loop until flag signals ready
+            POP     AF ; Retrieve character
+            OUT     ($81),A ; Output the character
+            RET      
+
+;------------------------------------------------------------------------------
+CKINCHAR:   LD      A,(serBufUsed) 
+            CP      $0 
+            RET      
+
+;------------------------------------------------------------------------------
+BPRINT:     LD      A,(HL) ; Get character
+            OR      A ; Is it $00 ?
+            RET     Z ; Then RETurn on terminator
+            RST     $08 ; Print it
+            INC     HL ; Next Character
+            JR      BPRINT ; Continue until $00
+            RET      
+            
+;------------------------------------------------------------------------------
+;Delay A times
+;
+DELAY:      OR      A               ; If 0 return
+            RET     Z
+            DEC     A
+            LD      B, $FF          ; Waste some time
+DELAY2:     NOP
+            NOP
+            NOP
+            NOP
+            DJNZ    DELAY2
+            JR      DELAY
+
+;------------------------------------------------------------------------------
+; Digital I/O card check
+;
+IOCHECK:
+            LD      A,%10101010
+            OUT     IOPORT,A
+            LD      A,$7F
+            CALL    DELAY
+            LD      A,%01010101
+            OUT     IOPORT,A
+            LD      A,$7F
+            CALL    DELAY
+            LD      A,%10101010
+            OUT     IOPORT,A
+            LD      A,$7F
+            CALL    DELAY
+            LD      A,%01010101
+            OUT     IOPORT,A
+            LD      A,$7F
+            CALL    DELAY
+                
+
+;------------------------------------------------------------------------------
+; Mute Soundchip
+;
+SILENCE:    LD      A,$9F            ; Mute Chan 1
+            OUT     SNDPORT,A
+            LD      A,$BF            ; Mute Chan 2
+            OUT     SNDPORT,A
+            LD      A,$DF            ; Mute Chan 3
+            OUT     SNDPORT,A
+            LD      A,$FF            ; Mute Chan 4
+            OUT     SNDPORT,A
+            RET
+
+;------------------------------------------------------------------------------
+; RAM Test helpers
+;
+;; Display '[aaaa]' - address of HL
+dispadd:
+    		LD A, '['
+    		CALL TXA
+    		LD A, H
+    		CALL hexout
+    		LD A, L
+    		CALL hexout
+    		LD A, ']'
+    		CALL TXA
+    		RET
+
+; OUTPUT VALUE OF A IN HEX ONE NYBBLE AT A TIME
+hexout: 
+            PUSH BC
+    		PUSH AF
+    		LD B, A
+    		; Upper nybble
+    		SRL A
+    		SRL A
+    		SRL A
+    		SRL A
+    		CALL TOHEX
+    		CALL TXA
+    
+    		; Lower nybble
+    		LD A, B
+    		AND 0FH
+    		CALL TOHEX
+    		CALL TXA
+    
+    		POP AF
+    		POP BC
+    		RET
+
+; TRANSLATE VALUE IN A TO 2 HEX CHAR CODES FOR DISPLAY
+TOHEX:
+    		PUSH HL
+    		PUSH DE
+    		LD D, 0
+    		LD E, A
+    		LD HL, HEXTAB
+    		ADD HL, DE
+    		LD A, (HL)
+    		POP DE
+    		POP HL
+    		RET
+
+;------------------------------------------------------------------------------
+; RAM Test Routines
+;
+RAMTST:
+    	; EXIT WITH NO ERRORS IF AREA SIZE IS 0
+    	LD		A, D
+    	OR		E
+    	RET		Z
+    	LD		B,D
+	    LD		C,E
+
+    	;FILL MEMORY WITH 0 AND TEST
+    
+    	PUSH	HL
+    	LD		HL, MSG00
+    	CALL	BPRINT
+    	POP		HL
+    	SUB		A
+    	CALL	FILCMP
+    	RET		C
+    
+    	;FILL MEMORY WITH FF HEX AND TEST
+    	PUSH	HL
+    	LD		HL, MSGFF
+    	CALL	BPRINT
+    	POP		HL
+    	LD		A, $FF
+    	CALL	FILCMP
+    	RET		C
+    
+    	; FILL MEMORY WITH AA HEX AND TEST
+    	PUSH	HL
+    	LD		HL, MSGAA
+    	CALL	BPRINT
+    	POP		HL
+    	LD		A, $AA
+    	CALL	FILCMP
+    	RET		C
+    
+    	; FILL MEMORY WITH 55 HEX AND TEST
+    	PUSH	HL
+    	LD		HL, MSG55
+    	CALL	BPRINT
+    	POP		HL
+    	LD		A, $55
+    	CALL	FILCMP
+    	RET		C
+
+    	PUSH	HL
+    	LD		HL, MSGWLK
+    	CALL	BPRINT
+    	POP		HL
+WLKLP:
+    	LD		A, $80		; BINARY 1000000
+WLKLP1:
+    	LD		(HL), A		; STORE TEST PATTERN IN MEMORY
+    	CP		(HL)		; TRY TO READ IT BACK
+    	SCF					; SET CARRY N CASE OF ERROR
+    	RET		NZ			; RETURN IF ERROR
+    	RRCA				; ROTATE PATTERN 1 RIGHT
+    	CP		$80
+    	JR		NZ,WLKLP1	; CONT UNTIL BINARY 10000000 AGAIN
+    	LD		(HL), 0		; CLEAR BYTE JUST CHECKED
+    	INC		HL
+    	DEC		BC			; DEC AND TEST 16-BIT COUNTER
+    	LD		A, B
+    	OR		C			; CLEAR CARRY
+    	JR		NZ,WLKLP	; CONT UNTIL MEMORY TESTED
+    	PUSH	HL
+    	LD		HL, TXTOK
+    	CALL	BPRINT
+    	POP		HL
+    	RET					; NO ERRORS
+
+FILCMP:
+    	PUSH	HL			; SAVE BASE ADDRESS
+    	PUSH	BC			; SAVE SIZE OF AREA
+    	LD		E, A		; SAVE TEST VALUE
+    	LD		(HL), A		; STORE TEST VALUE IN FIRST BYTE
+    	DEC		BC			; REMAINING AREA = SIZE - 1
+    	LD		A, B		; CHECK IF ANY AREA REMAINS
+    	OR		C
+    	LD		A, E		; RESTORE TEST VALUE
+    	JR		Z, COMPARE	; BRANCH IF AREA WAS ONLY 1 BYTE
+    
+    	; FILL REST OF AREA USING BLOCK MOVE
+    	; EACH ITERATION MOVES TEST VALUE TO NEXT HIGHER ADDRESS
+    	LD		D, H		; DESTINATION IS ALWAYS SOURCE + 1
+    	LD		E, L
+    	INC		DE
+    	LDIR				; FILL MEMORY
+
+; NOW THAT MEMORY HAS BEEN FILLED, TEST TO SEE IF
+; EACH BYTE CAN BE READ BACK CORRECTLY
+COMPARE:
+    	POP		BC			; RESTORE SIZE OF AREA
+    	POP		HL			; RESTORE BASE ADDRESS
+    	PUSH	HL			; SAVE BASE ADDRESS
+    	PUSH	BC			; SAVE SIZE OF VALUE
+
+; COMPARE MEMORY AND TEST VALUE
+CMPLP:
+    	CPI
+    	JR		NZ, CMPER	; JUMP IF NOT EQUAL
+    	JP		PE, CMPLP	; CONTINUE THROUGH ENTIRE AREA
+    						; NOTE CPI CLEARS P/V FLAG IF IT
+    						; DECREMENTS BC TO 0
+    
+    	; NO ERRORS FOUND, SO CLEAR CARRY
+    	POP		BC			; BC = SIZE OF AREA
+    	POP		HL			; HL = BASE ADDRESS
+    	OR		A			; CLEARS CARRY
+    	PUSH	HL
+    	LD		HL, TXTOK
+    	CALL	BPRINT
+    	POP		HL
+    	RET
+    
+; ERROR EXIT, SET CARRY
+CMPER:
+    	POP		BC
+    	POP		DE
+    	SCF
+    	RET
+
+
+;
+CHKERROR:
+        	RET		NC
+	        LD		B, A
+	        PUSH	HL
+            LD      HL,TXTRAMERR
+            CALL    BPRINT
+           	POP		HL
+        	CALL	dispadd
+        	LD		HL,TXTRAMBIT
+            CALL    BPRINT     ; Output string
+        	LD		A, B
+        	CALL	hexout
+        	LD      HL,CRLF
+        	CALL    BPRINT
+
+            LD      A,%10000010
+            OUT     IOPORT,A   ; LED 10000010
+
+            LD      HL,TXTLOOP ; done message
+            CALL    BPRINT     ; Output string
+            JP      INPUTLOOP
+            
+;------------------------------------------------------------------------------
+TESTINIT:           ; 1 -  minimal checks without stack 
+            LD      A,$55
+            OUT     IOPORT,A    ; LED 01010101
+
+MINRAMTEST: 
+            LD      HL,STARTRAM-1
+LOOP1:      
+            INC     HL
+            LD      (HL),$00
+            LD      A,(HL)
+            SUB     $00
+            JR      NZ,MINRAMERROR
+            LD      A,L ; Only need to check low byte becasuse buffer<256 bytes
+            CP      $FF 
+            JR      NZ,LOOP1
+
+            LD      HL,STARTRAM-1
+LOOP2:      
+            INC     HL
+            LD      (HL),$55
+            LD      A,(HL)
+            SUB     $55
+            JR      NZ,MINRAMERROR
+            LD      A,L ; Only need to check low byte becasuse buffer<256 bytes
+            CP      $FF 
+            JR      NZ,LOOP2
+
+            LD      HL,STARTRAM-1
+LOOP3:      
+            INC     HL
+            LD      (HL),$AA
+            LD      A,(HL)
+            SUB     $AA
+            JR      NZ,MINRAMERROR
+            LD      A,L ; Only need to check low byte becasuse buffer<256 bytes
+            CP      $FF 
+            JR      NZ,LOOP3
+
+            JP      STACKINIT   ; Continue
+
+MINRAMERROR:     
+            LD      A,%10000001
+            OUT     IOPORT,A      ; LED 10000001
+            HALT                  ; HALT
+            
+STACKINIT:          ; 2 -  initialize stack
+            LD      HL,TEMPSTACK ; Temp stack
+            LD      SP,HL        ; Set up a temporary stack
+
+SOUNDINIT:           
+            LD      A,%10000010
+            OUT     IOPORT,A    ; LED 10000010  - do we hang during silence?
+            CALL    SILENCE     ; Turn off Soundcard
+            LD      A,%00000010
+            OUT     IOPORT,A    ; LED 00000010  - Sound turned off
+
+DIOINIT:            
+            CALL    IOCHECK      ; Run Digital I/O card tests
+
+SERIALINIT:         ; 3 -  initialize serial
+            LD      A,%10000100
+            OUT     IOPORT,A    ; LED 00000100  - do we hang during Serial?
+
+            LD      HL,serBuf 
+            LD      (serInPtr),HL 
+            LD      (serRdPtr),HL 
+            XOR     A ;0 to accumulator
+            LD      (serBufUsed),A 
+            LD      A,RTS_LOW 
+            OUT     ($80),A ; Initialise ACIA
+            IM      1 ; Interrupt Mode 1
+            EI        ; Enable Interrupts
+
+            LD      A,%00000100
+            OUT     IOPORT,A    ; LED 00000100  - Serial initialized
+ 
+            LD      HL,SIGNON1 ; Sign-on message
+            CALL    BPRINT ; Output string
+
+            LD      HL,SIGNON2 ; Cold/warm message
+            CALL    BPRINT ; Output string
+
+TESTRAM:            ; 4 -  test all RAM
+            LD      A,%00001000
+            OUT     IOPORT,A        ; LED 00001000 - RAM test
+
+            LD      HL,TXTRAM1      ; Point to string
+            CALL    BPRINT          ; Print string
+            LD      HL, STARTRAM + $100  ; test without stack space
+        	LD		DE, $7EFF
+	        CALL	RAMTST
+	        CALL	CHKERROR           
+
+TESTSOUND:          ; 5 - Play Test Sound on SN76489 card
+            LD      A,%00010000
+            OUT     IOPORT,A        ; LED 00010000  - Sound test
+
+            LD      HL,TXTSND       ; Point to string
+            CALL    BPRINT          ; Print string
+            
+            LD      HL,SONG         ; Point to song data
+SNDLOOP:
+            LD      A,(HL)          ; Load Delay time
+            INC     HL 
+            CALL    DELAY
+            LD      A,(HL)          ; Load Note
+            INC     HL
+            OR      A               ; Last Note 0?    
+            JP      Z, SNDEXIT      ; Exit       
+            OUT     SNDPORT,A       ; else play it
+            JR      SNDLOOP         ; if not loop  
+
+SNDEXIT:
+            LD      HL,TXTOK        ; Point to string
+            CALL    BPRINT          ; Print string
+            CALL    SILENCE         ; Silence Audio
+
+TESTCHAR:
+            LD      A,%1010000
+            OUT     IOPORT,A        ; LEDs 00001000
+            LD      HL,TXTCHAR 
+            CALL    BPRINT
+            LD      A, $20          ; Start Char Space
+CHARLOOP:   
+            CALL    TXA
+            INC     A
+            JP      NZ, CHARLOOP
+            LD      HL,CRLF
+            CALL    BPRINT
+            LD      A,%00100000
+            OUT     IOPORT,A        ; LEDs 00001000
+
+TESTEND:            ; END of tests
+            LD      A,$00
+            OUT     IOPORT,A   ; LEDs off
+            LD      HL,TXTLOOP ; done message
+            CALL    BPRINT     ; Output string
+
+;------------------------------------------------------------------------------
+INPUTLOOP:           
+            CALL    RXA 
+            AND     %11011111 ; lower to uppercase
+
+            CP      "R"       ; R -> Restart
+            JP      Z,TESTINIT
+            CALL    TXA
+
+            JP      INPUTLOOP 
+
+SIGNON1:    DB      CS,CR,LF 
+            DB      "aZ80 DIAG ROM V1.0 - Attraktor e.V.",CR,LF,0 
+
+SIGNON2:    DB      CR,LF 
+            DB      "Basic Tests passed successfully.",CR,LF
+            DB      "Testing RAM ($8000-$80FF): OK!",CR,LF,0
+
+TXTSND:     DB      CR,LF
+            DB      "Testing Soundcard (SN76489 card): ",0
+
+TXTCHAR:    DB      CR,LF
+            DB      "Testing Charset ($20-$FF):",CR,LF,0
+
+TXTRAM1:    DB      CR,LF,"Testing RAM ($8100-$FFFF): ",CR,LF,0
+TXTRAMERR:  DB      CR,LF,"ERROR! at address ",0
+TXTRAMBIT:  DB      " with pattern ",0
+
+TXTOK:      DB      "OK!",CR,LF,0
+TXTERROR:   DB      "ERROR!",CR,LF,0
+TXTLOOP:    DB      CR,LF,"Tests done. (R) to Restart? ",0
+
+MSG00		DB  	"Read and write 00000000 : ",0
+MSGFF		DB  	"Read and write 11111111 : ",0
+MSGAA		DB  	"Read and write 10101010 : ",0
+MSG55		DB  	"Read and write 01010101 : ",0
+MSGWLK		DB  	"Walking bit test        : ",0
+
+CRLF:       DB      CR,LF,0 
+
+;SONG
+SONG:   .BYTE    00, 0x84, 0, 0x27 ; C0 tone 0x274
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    50, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    40, 0x93 ; C0 vol 12
+        .BYTE    60, 0x8f, 0, 0x22 ; C0 tone 0x22f
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    20, 0x84, 0, 0x27 ; C0 tone 0x274
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    40, 0x93 ; C0 vol 12
+        .BYTE    80, 0x80, 0, 0x2c ; C0 tone 0x2c0
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    20, 0x8b, 0, 0x2e ; C0 tone 0x2eb
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    40, 0x93 ; C0 vol 12
+        .BYTE    80, 0x8c, 0, 0x3a ; C0 tone 0x3ac
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    20, 0x85, 0, 0x34 ; C0 tone 0x345
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    40, 0x93 ; C0 vol 12
+        .BYTE    80, 0x84, 0, 0x3e ; C0 tone 0x3e4
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    20, 0x8c, 0, 0x3a ; C0 tone 0x3ac
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    40, 0x92 ; C0 vol 13
+        .BYTE    40, 0x93 ; C0 vol 12
+        .BYTE   200, 0x90 ; C0 vol 12
+        .BYTE    40, 0x91 ; C0 vol 12
+        .BYTE    10, 0x85, 0, 0x34 ; C0 tone 0x345
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    10, 0x8b, 0, 0x2e ; C0 tone 0x2eb
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    10, 0x80, 0, 0x2c ; C0 tone 0x2c0
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    10, 0x84, 0, 0x27 ; C0 tone 0x274
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    10, 0x83, 0, 0x1f ; C0 tone 0x1f3
+        .BYTE    00, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    10, 0x87, 0, 0x1d ; C0 tone 0x1d7
+        .BYTE    10, 0x90 ; C0 vol 15
+        .BYTE    40, 0x91 ; C0 vol 14
+        .BYTE    20, 0x92 ; C0 vol 13
+        .BYTE    20, 0x93 ; C0 vol 12
+        .BYTE    10, 0x94 ; C0 vol 11
+        .BYTE    20, 0x95 ; C0 vol 10
+        .BYTE    10, 0x96 ; C0 vol 9
+        .BYTE    20, 0x97 ; C0 vol 8
+        .BYTE    20, 0x98 ; C0 vol 7
+        .BYTE    10, 0x99 ; C0 vol 6
+        .BYTE    20, 0x9a ; C0 vol 5
+        .BYTE    10, 0x9b ; C0 vol 4
+        .BYTE    20, 0x9c ; C0 vol 3
+        .BYTE    20, 0x9d ; C0 vol 2
+        .BYTE    10, 0x9e ; C0 vol 1
+        .BYTE    20, 0x9f ; C0 vol 0
+        .BYTE    00, 0x00 ; END
+        
+; LOOKUP TABLE FOR TOHEX ROUTINE
+HEXTAB:
+		.BYTE	30h ; 0
+		.BYTE	31h ; 1
+		.BYTE	32h ; 2
+		.BYTE	33h ; 3
+		.BYTE	34h ; 4
+		.BYTE	35h ; 5
+		.BYTE	36h ; 6
+		.BYTE	37h ; 7
+		.BYTE	38h ; 8
+		.BYTE	39h ; 9
+		.BYTE	41h ; A
+		.BYTE	42h ; B
+		.BYTE	43h ; C
+		.BYTE	44h ; D
+		.BYTE	45h ; E
+		.BYTE	46h ; F
+
+    .END     
