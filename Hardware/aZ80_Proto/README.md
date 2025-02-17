@@ -2,4 +2,4 @@
 
 <img width="640px" src="aZ80_Proto.jpg" alt="Die aZ80 Prototypen Platine" />
 
-Die Proto Platine kann für eigene Experimente oder Schaltungen benutzt werden.
+Die Proto Platine kann für eigene Experimente oder Schaltungen benutzt werden und ist mit einem Lochraster ausgestattet.
