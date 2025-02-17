@@ -4,12 +4,12 @@
 ; 
 ;                       Diagnostics and Test ROM V1.0
 ; 
-;           Contents of this file are copyright Frank Hellmann
+;                        by Frank Hellmann 2022
+;
+;              Contents of this file are under MIT license
 ; 
 ;               https://wiki.attraktor.org/aZ80_Computer
 ; 
-; You have permission to use this for NON COMMERCIAL USE ONLY
-; If you wish to use it elsewhere, please include an acknowledgement to myself.
 ; 
 ;       LED Status Codes:
 ;
