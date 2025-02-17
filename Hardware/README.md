@@ -2,9 +2,15 @@
 
 <img width="640px" src="../Docs/aZ80_System.jpg" alt="Das aZ80 System" />
 
+#### Wie funktioniert der aZ80 Retro Computer?
+
+Wenn man sich die Teile dieses Computers, wie Bus-Platine, Taktgenerator, CPU, RAM, ROM, Serielle Schnittstelle usw., als Teile eines menschlichen Körpers vorstellt, dann wäre z.B. die Bus-Platine das Rückgrat, welche die anderen Komponenten verbindet. An der Busplatine hängt dann die Taktplatine, die den Herzschlag an allen Platinen liefert und diese damit synchronisiert. Die CPU als Hirn hängt genauso am Bus und verarbeitet alle Sinneseindrücke und gibt die Befehle. Die ROM und RAM Platinen hängen dort auch wie unser Gedächtnis mit am Bus. Und die Serielle Schnittstelle arbeitet wie unser Mund und Ohren und nimmt die Verständigung mit der Umwelt auf.
+
+Alle Teile werden benötigt um ein funktionierenden Computer zu bekommen und wenn ein Teil nicht richtig funktioniert, kann sich das aZ80 System im übertragenen Sinne z.B. nichts merken, oder auch nicht richtig sprechen.
+
 #### Aus welchen Komponenten besteht das aZ80 System?
 
-Über eine zentrale Verbindungsplatine (aZ80 Bus) werden die Prozessorplatine (aZ80 CPU),
+Über die zentrale Verbindungsplatine (aZ80 Bus) werden die Prozessorplatine (aZ80 CPU),
 der Festwertspeicher (aZ80 ROM), der Zugriffspeicher (aZ80 RAM), die Taktplatine (aZ80 Clock),
 der serielle Controller (aZ80 Serial), die Ein- und Ausgabeplatine (aZ80 DIO) und weitere Platinen,
 miteinander verbunden. Der 40 Pin breite Bus des aZ80 enthält die wichtigsten Signale um diese 
