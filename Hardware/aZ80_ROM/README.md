@@ -6,9 +6,11 @@ Die ROM Platine stellt dem aZ80 Retro System den nichtflüchtigen Speicher zur V
 
 Der 32KB große Speicherbaustein (EEPROM) ist in 4 8KB große Teile (Bänke/Pages) aufgeteilt.
 
+Das ROM wird im ersten Speicherbereich eingeblendet ($0000 - $3FFF) und enthält auch die Interrupt Vectoren.
+
 #### Bank Auswahl
 
-Über die Jumper JP1 und JP2 kann der Teil des ROMs eingestellt werden, der dem aZ80 zur Verfügung gestellt werden soll.
+Über die Jumper JP1 und JP2 kann der 8KB Teil des ROMs eingestellt werden, der dem aZ80 zur Verfügung gestellt werden soll.
 
 | JP2 | JP1 | Bank |
 |:---:|:---:|:-----|
