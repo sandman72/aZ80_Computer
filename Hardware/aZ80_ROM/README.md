@@ -2,7 +2,9 @@
 
 <img width="640px" src="aZ80_ROM.jpg" alt="Die aZ80 ROM Platine" />
 
-Die ROM Platine stellt dem aZ80 Retro System den nichtflüchtigen Speicher zur Verfügung. Der 32KB große Speicherbaustein (EEPROM) ist in 4 8KB große Teile (Bänke/Pages) aufgeteilt.
+Die ROM Platine stellt dem aZ80 Retro System den nichtflüchtigen Speicher zur Verfügung. 
+
+Der 32KB große Speicherbaustein (EEPROM) ist in 4 8KB große Teile (Bänke/Pages) aufgeteilt.
 
 #### Bank Auswahl
 
