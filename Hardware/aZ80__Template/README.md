@@ -1,3 +1,3 @@
 # aZ80 Platinen Template
 
-Dieses Template kann genutzt werden um eigene Platinen im Formfaktor des aZ80 zu designen.
+Dieses Template kann genutzt werden um mit KiCAD V8.0 oder neuer eigene Platinen im Formfaktor des aZ80 Retro Systems zu designen.
