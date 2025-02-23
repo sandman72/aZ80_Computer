@@ -18,7 +18,7 @@ Unter Docs findet sich eine erste Präsentation über das Projekt. Eine ausführ
 <img width="640px" src="./Docs/aZ80_Boardset.jpg" alt="Die aZ80 Boards" />
 
 Die Entscheidung was für ein System ich "neu" entwickeln wollte, fiel auf einen Bauvorschlag von <a href="http://searle.wales/">Grant Searle</a>, 
-der auch bei einigen anderen Retro-Computern (RC2014) zum Einsatz kam. Damit gibt es eine gewisse 
+der auch bei einigen anderen Retro-Computern (z.B. RC2014) zum Einsatz kam. Damit gibt es eine gewisse 
 Kompatibilität zum RC2014 System und den Steckkarten, aber der aZ80 sollte als Open-Hardware und -Software verfügbar 
 sein und nicht hinter einer Paywall liegen, teure Kits oder Zusatz Hardware benötigen, z.B. wie der RC2014.
 
