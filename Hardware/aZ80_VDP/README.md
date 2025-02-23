@@ -8,7 +8,7 @@ Auch andere USB-Geräte, wie Maus, Joystick oder Speicherstick können abgefragt
 
 Der VDP untertützt die normale Anzeige von Text, der über die seriellen Schnittstelle eingeht. Darüber hinaus werden auch ANSI Kontrollzeichen 
 unterstützt, welche eine erweiterte Kontrolle der Textattribute, wie Farbe, Blinken, Position usw. erlaubt, darüber hinaus auch eine Grafikausgaben
-und die Kontrolle von Sprites, Maus-Cursor und den Buzzer erlaubt. Weiteres auf der ANSI Seite.
+und die Kontrolle von Sprites, Maus-Cursor und den Buzzer erlaubt. Weiteres auf der <a href="./ANSI.md">ANSI Seite</a>.
 
 Über die USB-Tastatur kann mit der Tastenkombination WIN+ESC ein Debug-Fenster eingeblendet werden, das den akutellen Zustand des VDP anzeigt.
 
@@ -17,7 +17,7 @@ und die Kontrolle von Sprites, Maus-Cursor und den Buzzer erlaubt. Weiteres auf 
 Der VDP bietet eine Grafikauflösung von 320x240 Pixel mit 256 Farben. Die Ausgabe erfolgt hochskaliert als 640x480 Pixel Modus mit 60Hz über eine (not) HDMI Schnittstelle.
 
  - 320x240 Pixel Auflösung
- - 40x24 Zeichen Textmodus mit 16 bzw. 256 Farben
+ - 40x30 Zeichen Textmodus mit 16 bzw. 256 Farben
  - 256 Farben Palette mit 16bit Farbtiefe, 8 Farben in automatischer Farbrotation
  - 64 32x32 Pixel Sprites mit 256 Farben und Maskenkanal
  - einen Mauscursor
