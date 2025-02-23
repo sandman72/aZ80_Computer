@@ -2,11 +2,12 @@
 
 To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 
-    PRINT CHR$(27);"[7m REVERSE"
-    PRINT CHR$(27);"[31m RED"
+PRINT CHR$(27);"[7m REVERSE"
+    
+PRINT CHR$(27);"[31m RED"
   
-
 #### Single Chars:
+| ESC  | Action |
 |:-----|:-----|
 | ESC[7               | Save the cursor position |
 | ESC[8               | Move cursor to previously saved position |
@@ -22,7 +23,7 @@ To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 | ESC[K               | Clear line from cursor |
 
 #### Multiple chars:
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC[?12l            | Cursor not blinking |
 | ESC[?12h            | Cursor blinking |
@@ -59,14 +60,14 @@ To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 | ESC[nS              | scroll whole page up by n rows (default 1 if n missing) |
 
 #### Sprites
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC[80;n;em         | Set sprite state -e- enable=1 disable=0 |
 | ESC[81;n;x;ym       | Move sprite -n- to position -x- -y- |
 | ESC[82;n;x;ym       | Set sprite velocity to -x- -y- |
 
 #### Graphics
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC[1;0;0;g         | Move GFX cursor to position x=0 y=0 |
 | ESC[5;10;20;42;g    | Draw Pixel at position x=10 y=20 with color 42 |
@@ -77,7 +78,7 @@ To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 | ESC[99g             | Clear command list and set cursor to x=0 y=0 |
 
 #### Cursor Modes
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC[0 q             | Cursor Off |
 | ESC[1 q             | Blinking Block |
@@ -88,7 +89,7 @@ To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 | ESC[6 q             | Steady Bar |
 
 #### Mouse Modes
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC[?1020h           | Return Mouse Position -> returns ESC[-n-;-m-;-b-R   -n- = x  -m- = y  -b- = buttons |
 | ESC[?1030h           | Mouse Off |
@@ -100,7 +101,7 @@ To use them the Escape Sequence (ESC = 27) needs to be send. For example:
 
 #### OS Commands (TODO)
 commands are send in form of ESC]command; with a closing ;
-
+| ESC  | Action |
 |:-----|:-----|
 | ESC]dir;             | Return directory listing of USB Stick |
 | ESC]load -n-;        | Loads/Prints out file -n- to terminal |
