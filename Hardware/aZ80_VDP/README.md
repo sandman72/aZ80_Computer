@@ -2,7 +2,7 @@
 
 <img width="640px" src="aZ80_VDP.jpg" alt="Die aZ80 VDP Platine" />
 
-Die Video-Display-Processor VDP Platine ist eine Grafik- und I/O-Karte mit eingebautem Terminal Emulator. Über die serielle Schnittstelle kann sie Daten vom aZ80 System
+Die Video-Display-Processor VDP Platine ist eine Grafik- und I/O-Karte mit eingebautem VT100+ Terminal Emulator. Über die serielle Schnittstelle kann sie Daten vom aZ80 System
 entgegennehmen und anzeigen, kann aber auch über den USB Port Eingaben über eine USB-Tastatur an das aZ80 System weitergeben. 
 Auch andere USB-Geräte, wie Maus, Joystick oder Speicherstick können abgefragt werden, wobei die Unterstützung noch work in progress ist.
 
