@@ -16,6 +16,7 @@ und die Kontrolle von Sprites, Maus-Cursor und den Buzzer erlaubt. Weiteres auf 
 
 Der VDP bietet eine Grafikauflösung von 320x240 Pixel mit 256 Farben. Die Ausgabe erfolgt hochskaliert als 640x480 Pixel Modus mit 60Hz über eine (not) HDMI Schnittstelle.
 
+ - Arduino Software auf einem Raspberry PI Pico 2 - RP2350
  - 320x240 Pixel Auflösung
  - 40x30 Zeichen Textmodus mit 16 bzw. 256 Farben
  - 256 Farben Palette mit 16bit Farbtiefe, 8 Farben in automatischer Farbrotation
