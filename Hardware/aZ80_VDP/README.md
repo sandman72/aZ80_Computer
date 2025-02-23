@@ -7,7 +7,7 @@ entgegennehmen und anzeigen, kann aber auch über den USB Port Eingaben über ei
 Auch andere USB-Geräte, wie Maus, Joystick oder Speicherstick können abgefragt werden, wobei die Unterstützung noch work in progress ist.
 
 Der VDP untertützt die normale Anzeige von Text, der über die seriellen Schnittstelle eingeht. Darüber hinaus werden auch ANSI Kontrollzeichen 
-unterstützt, welche eine erweiterte Kontrolle der Textattribute, wie Farbe, Blinken, Position usw. erlaubt, darüber hinaus auch eine Grafikausgaben
+unterstützt, welche eine erweiterte Kontrolle der Textattribute, wie Farbe, Blinken, Position usw. erlaubt, und darüber hinaus auch eine Grafikausgaben
 und die Kontrolle von Sprites, Maus-Cursor und den Buzzer erlaubt. Weiteres auf der <a href="./ANSI.md">ANSI Seite</a>.
 
 Über die USB-Tastatur kann mit der Tastenkombination WIN+ESC ein Debug-Fenster eingeblendet werden, das den akutellen Zustand des VDP anzeigt.
